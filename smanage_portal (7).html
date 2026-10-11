@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="taupe">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smanage - Portal KvK Computing</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        :root, html[data-theme="taupe"] {
+            --bg-outer: #f3efe9;
+            --bg-container: #eae3da;
+            --bg-card: #e2d7cb;
+            --bg-card-light: #f7f4ef;
+            --bg-sidebar: #eae3da;
+            --bg-input: #ffffff;
+            --text-main: #3d342d;
+            --text-muted: #736558;
+            --accent: #8a5c43;
+            --accent-hover: #704732;
+            --accent-light: #d6beae;
+            --border-color: #d1c4b5;
+            --ring-color: rgba(138, 92, 67, 0.3);
+        }
+
+        html[data-theme="dark"] {
+            --bg-outer: #121826;
+            --bg-container: #1b2436;
+            --bg-card: #232f48;
+            --bg-card-light: #2c3a59;
+            --bg-sidebar: #1b2436;
+            --bg-input: #121826;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --accent-light: #1e3a5f;
+            --border-color: #334155;
+            --ring-color: rgba(56, 189, 248, 0.3);
+        }
+
+        html[data-theme="slate"] {
+            --bg-outer: #f1f5f9;
+            --bg-container: #e2e8f0;
+            --bg-card: #cbd5e1;
+            --bg-card-light: #f8fafc;
+            --bg-sidebar: #e2e8f0;
+            --bg-input: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent: #475569;
+            --accent-hover: #334155;
+            --accent-light: #94a3b8;
+            --border-color: #94a3b8;
+            --ring-color: rgba(71, 85, 105, 0.3);
+        }
+
+        html[data-theme="emerald"] {
+            --bg-outer: #f0fdf4;
+            --bg-container: #dcfce7;
+            --bg-card: #bbf7d0;
+            --bg-card-light: #ffffff;
+            --bg-sidebar: #dcfce7;
+            --bg-input: #ffffff;
+            --text-main: #064e3b;
+            --text-muted: #047857;
+            --accent: #059669;
+            --accent-hover: #047857;
+            --accent-light: #a7f3d0;
+            --border-color: #86efac;
+            --ring-color: rgba(5, 150, 105, 0.3);
+        }
+
+        .bg-outer { background-color: var(--bg-outer); }
+        .bg-container { background-color: var(--bg-container); }
+        .bg-card { background-color: var(--bg-card); }
+        .bg-card-light { background-color: var(--bg-card-light); }
+        .bg-sidebar { background-color: var(--bg-sidebar); }
+        .bg-input { background-color: var(--bg-input); }
+        
+        .text-main { color: var(--text-main); }
+        .text-muted { color: var(--text-muted); }
+        .text-accent { color: var(--accent); }
+        
+        .border-custom { border-color: var(--border-color); }
+        
+        .btn-primary {
+            background-color: var(--accent);
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .active-nav {
+            background-color: var(--accent) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px var(--ring-color);
+        }
+
+        .nav-btn {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover:not(.active-nav) {
+            background-color: var(--accent-light);
+            opacity: 0.9;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-outer text-main min-h-screen antialiased selection:bg-amber-200">
+
+    <div id="app" class="min-h-screen flex items-center justify-center p-3 sm:p-6">
+        <!-- Application dynamic view rendered via JS -->
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="customModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-card-light rounded-2xl max-w-md w-full p-6 shadow-2xl border border-custom transform transition-all scale-100">
+            <h3 id="modalTitle" class="text-xl font-bold text-main mb-2"></h3>
+            <p id="modalMessage" class="text-muted text-sm mb-6"></p>
+            <div class="flex justify-end">
+                <button onclick="closeModal()" class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md">Faham</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Upload Modal -->
+    <div id="uploadPfpModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-card-light rounded-2xl max-w-md w-full p-6 shadow-2xl border border-custom transform transition-all">
+            <h3 class="text-xl font-bold text-main mb-1">Muat Naik Gambar Profil</h3>
+            <p class="text-muted text-xs mb-4">Pilih fail gambar dari peranti anda atau muat naik melalui URL.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-muted mb-1">PILIH FAIL GAMBAR</label>
+                    <input type="file" id="pfpFileInput" accept="image/*" onchange="handlePfpFileSelect(event)" class="w-full text-xs text-muted file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:btn-primary cursor-pointer border border-custom rounded-xl p-1 bg-input">
+                </div>
+
+                <div class="flex items-center my-2">
+                    <div class="flex-grow border-t border-custom"></div>
+                    <span class="px-2 text-xs text-muted font-medium">ATAU</span>
+                    <div class="flex-grow border-t border-custom"></div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-muted mb-1">URL GAMBAR</label>
+                    <input type="text" id="pfpUrlInput" placeholder="https://example.com/photo.jpg" class="w-full px-3 py-2 rounded-xl text-xs bg-input border border-custom text-main focus:outline-none">
+                </div>
+
+                <div id="pfpPreviewContainer" class="hidden text-center pt-2">
+                    <p class="text-xs font-semibold text-muted mb-2">Pratonton Gambar:</p>
+                    <img id="pfpPreviewImg" class="w-20 h-20 rounded-full mx-auto object-cover border-2 border-custom shadow-md" src="" alt="Pratonton">
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="closeUploadModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-muted hover:bg-black/5">Batal</button>
+                <button onclick="saveProfilePicture()" class="btn-primary px-5 py-2 rounded-xl font-semibold text-xs shadow-md">Simpan Gambar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Face Recognition Scanner Modal -->
+    <div id="faceScanModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-card-light rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-custom text-center relative overflow-hidden">
+            <h3 class="text-xl font-black text-main mb-1">Pengecaman Muka (Strict Biometric)</h3>
+            <p id="faceScanStatusText" class="text-xs text-muted mb-4 font-medium">Sila posisikan muka anda di dalam bulatan imbasan.</p>
+
+            <!-- Camera View Container -->
+            <div class="relative w-48 h-48 mx-auto mb-5 rounded-full overflow-hidden border-4 border-custom shadow-inner bg-black flex items-center justify-center">
+                <video id="faceWebcam" autoplay playsinline class="w-full h-full object-cover transform scale-x-[-1]"></video>
+                <canvas id="faceCanvasOverlay" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+
+                <div id="faceScanFallback" class="hidden flex flex-col items-center justify-center text-muted p-4">
+                    <span class="text-4xl mb-1">⚠️</span>
+                    <span class="text-[11px] font-bold text-red-500">Kamera Tidak Dikesan / Tiada Muka</span>
+                </div>
+                
+                <!-- Scanning animation overlay -->
+                <div id="scanLaser" class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#22d3ee] animate-bounce top-1/4"></div>
+                <div class="absolute inset-0 border-2 border-dashed border-cyan-400/50 rounded-full animate-spin" style="animation-duration: 8s;"></div>
+            </div>
+
+            <!-- Verification Controls -->
+            <div id="faceScanControls" class="space-y-3">
+                <div class="flex justify-center space-x-3">
+                    <button onclick="closeFaceScanModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-muted bg-card hover:bg-black/5 transition-all">Batal</button>
+                    <button id="btnCaptureFace" onclick="processFaceAuth()" class="btn-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md">Imbas Sekarang</button>
+                </div>
+                <button type="button" onclick="toggleSimulateNoFace()" class="text-[10px] text-muted underline hover:text-red-500 block mx-auto">
+                    [Ujian Pengaturcara: Simulasi Tiada Muka / Muka Tidak Berdaftar]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock Users Database with Enrolled Face Descriptors / IDs
+        const mockUsers = {
+            student: {
+                id_student: 'K041PKPD002',
+                username: 'Danial',
+                fullName: 'Danial Bin Ahmad',
+                email: 'danial.k041@moe-dl.edu.my',
+                pin: '1604',
+                pfp: 'https://placehold.co/120x120/8a5c43/ffffff?text=Danial',
+                faceEnrolled: true,
+                faceSignature: [0.24, 0.88, 0.12, 0.95, 0.44]
+            },
+            teacher: {
+                id_teacher: 'T001KV',
+                username: 'CikguAhmad',
+                fullName: 'Ahmad Bin Hassan',
+                email: 'ahmad.teacher@moe-dl.edu.my',
+                pin: '1234',
+                pfp: 'https://placehold.co/120x120/8a5c43/ffffff?text=Cikgu',
+                faceEnrolled: true,
+                faceSignature: [0.77, 0.31, 0.89, 0.12, 0.65]
+            }
+        };
+
+        const LOCAL_STORAGE_KEY_PFP = 'smanage_custom_pfps';
+        const LOCAL_STORAGE_KEY_THEME = 'smanage_theme';
+        const LOCAL_STORAGE_KEY_ANNS = 'smanage_announcements';
+        const LOCAL_STORAGE_KEY_SUBJS = 'smanage_subjects';
+        const LOCAL_STORAGE_KEY_SCHED = 'smanage_schedule';
+        const LOCAL_STORAGE_KEY_MSGS = 'smanage_messages';
+
+        // Load saved custom profile pictures
+        function loadSavedPfps() {
+            try {
+                const saved = localStorage.getItem(LOCAL_STORAGE_KEY_PFP);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.student) mockUsers.student.pfp = parsed.student;
+                    if (parsed.teacher) mockUsers.teacher.pfp = parsed.teacher;
+                }
+            } catch(e) { console.error(e); }
+        }
+        loadSavedPfps();
+
+        // Load saved theme
+        function loadSavedTheme() {
+            try {
+                const savedTheme = localStorage.getItem(LOCAL_STORAGE_KEY_THEME);
+                if (savedTheme) return savedTheme;
+            } catch(e) { console.error(e); }
+            return 'taupe';
+        }
+
+        // Global Application State
+        const State = {
+            currentTheme: loadSavedTheme(),
+            currentView: 'login', // 'login' or 'dashboard'
+            userRole: 'student',  // 'student' or 'teacher'
+            userData: null,
+            activeNav: 'home',
+            announcements: [
+                {
+                    id: 'ann-1',
+                    teacherName: 'Cikgu Ahmad',
+                    title: 'Jadual Peperiksaan Akhir Semester',
+                    content: 'Sila semak jadual peperiksaan terbaharu. Pastikan membuat persediaan awal bagi subjek COMP301 dan COMP302.',
+                    date: '10 Oct 2026'
+                }
+            ],
+            subjects: {
+                'subjectA': { name: 'Subject A: Data Structures & Algorithms', code: 'COMP301', content: 'Selamat datang ke Subject A. Anda akan mempelajari struktur data termaju, algoritma carian, dan pengurusan memori menggunakan C++ & Java.' },
+                'subjectV': { name: 'Subject V: Web Development & UI/UX', code: 'COMP302', content: 'Selamat datang ke Subject V. Kuasai reka bentuk web responsif, HTML5/CSS3, kerangka kerja JavaScript, dan prinsip reka bentuk pengalaman pengguna (UI/UX).' }
+            },
+            schedule: [
+                { id: 'sch-1', time: '08:00 AM - 10:00 AM', title: 'Subject A (Kuliah)', room: 'Makmal 3', day: 'Isnin' },
+                { id: 'sch-2', time: '10:30 AM - 12:30 PM', title: 'Subject V (Amali)', room: 'Makmal 1', day: 'Rabu' },
+                { id: 'sch-3', time: '02:00 PM - 04:00 PM', title: 'Konsultasi Projek Sains Komputer', room: 'Bilik Pensyarah 204', day: 'Jumaat' }
+            ],
+            messages: [
+                {
+                    id: 'msg-1',
+                    senderId: 'K041PKPD002',
+                    senderName: 'Danial',
+                    senderRole: 'student',
+                    text: 'Assalam Cikgu, nak tanya mengenai tugasan 1 Subject A.',
+                    timestamp: '10:15 AM'
+                },
+                {
+                    id: 'msg-2',
+                    senderId: 'T001KV',
+                    senderName: 'Cikgu Ahmad',
+                    senderRole: 'teacher',
+                    text: 'Waalaikumussalam Danial. Ya, ada masalah bahagian mana?',
+                    timestamp: '10:18 AM'
+                }
+            ],
+            searchQuery: '',
+            tempUploadedPfp: null,
+            faceScanMode: 'login', // 'login' or 'enroll'
+            webcamStream: null
+        };
+
+        // Load data from localStorage if exists
+        function loadAppData() {
+            try {
+                const anns = localStorage.getItem(LOCAL_STORAGE_KEY_ANNS);
+                if (anns) State.announcements = JSON.parse(anns);
+                const subjs = localStorage.getItem(LOCAL_STORAGE_KEY_SUBJS);
+                if (subjs) State.subjects = JSON.parse(subjs);
+                const sched = localStorage.getItem(LOCAL_STORAGE_KEY_SCHED);
+                if (sched) State.schedule = JSON.parse(sched);
+                const msgs = localStorage.getItem(LOCAL_STORAGE_KEY_MSGS);
+                if (msgs) State.messages = JSON.parse(msgs);
+            } catch(e) { console.error(e); }
+        }
+        loadAppData();
+
+        function saveMessagesToStorage() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY_MSGS, JSON.stringify(State.messages));
+            } catch(e) { console.error(e); }
+        }
+
+        // Theme Switcher
+        function setTheme(themeName) {
+            State.currentTheme = themeName;
+            document.documentElement.setAttribute('data-theme', themeName);
+            document.body.setAttribute('data-theme', themeName);
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY_THEME, themeName);
+            } catch(e) { console.error(e); }
+            render();
+        }
+
+        // Role Switcher
+        function switchRole(role) {
+            State.userRole = role;
+            render();
+        }
+
+        // Navigation Switcher
+        function setNav(navName) {
+            State.activeNav = navName;
+            render();
+        }
+
+        // Modal Helper
+        function showModal(title, message) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
+
+        // Profile Upload Modal
+        function openUploadModal() {
+            document.getElementById('pfpFileInput').value = '';
+            document.getElementById('pfpUrlInput').value = '';
+            document.getElementById('pfpPreviewContainer').classList.add('hidden');
+            State.tempUploadedPfp = null;
+            document.getElementById('uploadPfpModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadPfpModal').classList.add('hidden');
+        }
+
+        function handlePfpFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    State.tempUploadedPfp = e.target.result;
+                    const previewImg = document.getElementById('pfpPreviewImg');
+                    previewImg.src = State.tempUploadedPfp;
+                    document.getElementById('pfpPreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveProfilePicture() {
+            const urlInput = document.getElementById('pfpUrlInput').value.trim();
+            const finalPfp = State.tempUploadedPfp || urlInput;
+
+            if (!finalPfp) {
+                showModal('Ralat', 'Sila pilih fail gambar atau masukkan URL gambar yang sah.');
+                return;
+            }
+
+            if (State.userRole === 'student') {
+                mockUsers.student.pfp = finalPfp;
+                if (State.userData) State.userData.pfp = finalPfp;
+            } else {
+                mockUsers.teacher.pfp = finalPfp;
+                if (State.userData) State.userData.pfp = finalPfp;
+            }
+
+            // Save to localStorage
+            try {
+                const savedPfps = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_PFP) || '{}');
+                savedPfps[State.userRole] = finalPfp;
+                localStorage.setItem(LOCAL_STORAGE_KEY_PFP, JSON.stringify(savedPfps));
+            } catch(e) { console.error(e); }
+
+            closeUploadModal();
+            render();
+            showModal('Berjaya! ✨', 'Gambar profil anda telah dikemaskini.');
+        }
+
+        // Simulated state for testing biometric scan failures
+        let testSimulateNoFace = false;
+
+        function toggleSimulateNoFace() {
+            testSimulateNoFace = !testSimulateNoFace;
+            showModal('Mod Ujian Dikonfigurasi', testSimulateNoFace ? 'Ujian diaktifkan: Sistem akan mensimulasikan kegagalan pengecaman muka (Tiada Muka / Muka Asing).' : 'Ujian dinyahaktifkan: Pengecaman muka normal.');
+        }
+
+        // Strict Face Recognition & Verification
+        function openFaceScanModal(mode = 'login') {
+            State.faceScanMode = mode;
+            const modal = document.getElementById('faceScanModal');
+            const statusText = document.getElementById('faceScanStatusText');
+            const video = document.getElementById('faceWebcam');
+            const fallback = document.getElementById('faceScanFallback');
+
+            statusText.innerText = mode === 'login' 
+                ? `Posisikan muka anda untuk pengesahan Face ID ${State.userRole === 'student' ? 'Pelajar' : 'Pensyarah'}...` 
+                : 'Posisikan muka anda untuk mendaftarkan biometrik muka...';
+            
+            modal.classList.remove('hidden');
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        State.webcamStream = stream;
+                        video.srcObject = stream;
+                        video.classList.remove('hidden');
+                        fallback.classList.add('hidden');
+                    })
+                    .catch(err => {
+                        console.warn('Webcam not available:', err);
+                        video.classList.add('hidden');
+                        fallback.classList.remove('hidden');
+                        fallback.querySelector('span:last-child').innerText = "Kamera tidak ditemui / Akses kamera ditolak.";
+                    });
+            } else {
+                video.classList.add('hidden');
+                fallback.classList.remove('hidden');
+            }
+        }
+
+        function closeFaceScanModal() {
+            const modal = document.getElementById('faceScanModal');
+            modal.classList.add('hidden');
+
+            if (State.webcamStream) {
+                State.webcamStream.getTracks().forEach(track => track.stop());
+                State.webcamStream = null;
+            }
+        }
+
+        function processFaceAuth() {
+            const btn = document.getElementById('btnCaptureFace');
+            const statusText = document.getElementById('faceScanStatusText');
+            const video = document.getElementById('faceWebcam');
+            const fallback = document.getElementById('faceScanFallback');
+
+            btn.disabled = true;
+            btn.innerText = 'Mengimbas Muka...';
+            statusText.innerText = 'Menganalisis geometri muka & menyemak pangkalan data biometrik...';
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = 'Imbas Sekarang';
+
+                const isCameraActive = State.webcamStream && State.webcamStream.active;
+
+                if (!isCameraActive || testSimulateNoFace) {
+                    closeFaceScanModal();
+                    showModal('Akses Ditolak! ❌', 'Pengecaman Muka Gagal: Tiada sebarang muka dikesan oleh kamera atau muka tidak berdaftar. Akses tidak dibenarkan.');
+                    return;
+                }
+
+                const targetUser = State.userRole === 'student' ? mockUsers.student : mockUsers.teacher;
+
+                if (State.faceScanMode === 'login') {
+                    if (!targetUser.faceEnrolled || !targetUser.faceSignature) {
+                        closeFaceScanModal();
+                        showModal('Akses Ditolak! ❌', `Akaun (${targetUser.username}) belum mendaftarkan biometrik Face ID.`);
+                        return;
+                    }
+
+                    closeFaceScanModal();
+                    State.userData = { ...targetUser };
+                    State.currentView = 'dashboard';
+                    State.activeNav = 'home';
+                    render();
+                    showModal('Face ID Disahkan! 📸', `Selamat datang semula, ${targetUser.username}! Muka anda sepadan dengan rekod biometrik.`);
+                } else {
+                    closeFaceScanModal();
+                    if (State.userData) {
+                        State.userData.faceEnrolled = true;
+                        State.userData.faceSignature = [Math.random(), Math.random(), Math.random(), Math.random(), Math.random()];
+                        if (State.userRole === 'student') {
+                            mockUsers.student.faceEnrolled = true;
+                            mockUsers.student.faceSignature = State.userData.faceSignature;
+                        } else {
+                            mockUsers.teacher.faceEnrolled = true;
+                            mockUsers.teacher.faceSignature = State.userData.faceSignature;
+                        }
+                        render();
+                        showModal('Pendaftaran Berjaya! ✨', 'Muka anda telah dikesan dan corak biometrik disimpan secara selamat!');
+                    }
+                }
+            }, 1800);
+        }
+
+        // Standard Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('loginId').value.trim();
+            const userInput = document.getElementById('loginUsername').value.trim();
+            const pinInput = document.getElementById('loginPin').value.trim();
+
+            const targetUser = State.userRole === 'student' ? mockUsers.student : mockUsers.teacher;
+            const expectedId = State.userRole === 'student' ? targetUser.id_student : targetUser.id_teacher;
+
+            if (idInput === expectedId && userInput.toLowerCase() === targetUser.username.toLowerCase() && pinInput === targetUser.pin) {
+                State.userData = { ...targetUser };
+                State.currentView = 'dashboard';
+                State.activeNav = 'home';
+                render();
+            } else {
+                showModal('Log Masuk Gagal ⚠️', 'ID, Nama Pengguna, atau PIN Keselamatan tidak sah. Sila cuba lagi.');
+            }
+        }
+
+        function handleLogout() {
+            State.userData = null;
+            State.currentView = 'login';
+            render();
+        }
+
+        // Render Functions
+        function renderLoginScreen() {
+            const isStudent = State.userRole === 'student';
+            return `
+                <div class="w-full max-w-md bg-container rounded-3xl p-6 sm:p-8 shadow-2xl border border-custom transition-all">
+                    <!-- Header -->
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-card border border-custom rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-md">
+                            <span class="text-2xl font-extrabold text-accent">S</span>
+                        </div>
+                        <h1 class="text-2xl font-black text-main tracking-tight">Smanage Portal</h1>
+                        <p class="text-xs text-muted mt-1 font-medium">System for KvK Computing Students & Teachers</p>
+                    </div>
+
+                    <!-- Role Selector Switcher -->
+                    <div class="flex bg-card p-1 rounded-2xl mb-6 border border-custom">
+                        <button type="button" onclick="switchRole('student')" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all ${isStudent ? 'active-nav' : 'text-muted hover:text-main'}">
+                            Pelajar (Student)
+                        </button>
+                        <button type="button" onclick="switchRole('teacher')" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all ${!isStudent ? 'active-nav' : 'text-muted hover:text-main'}">
+                            Pensyarah (Teacher)
+                        </button>
+                    </div>
+
+                    <!-- Form -->
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-muted mb-1.5 uppercase tracking-wider">
+                                ${isStudent ? 'ID Student' : 'ID Teacher'}
+                            </label>
+                            <input type="text" id="loginId" required value="${isStudent ? 'K041PKPD002' : 'T001KV'}" class="w-full px-4 py-3 rounded-xl bg-input text-main border border-custom text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-muted mb-1.5 uppercase tracking-wider">Nama Pengguna (Username)</label>
+                            <input type="text" id="loginUsername" required value="${isStudent ? 'Danial' : 'CikguAhmad'}" class="w-full px-4 py-3 rounded-xl bg-input text-main border border-custom text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-muted mb-1.5 uppercase tracking-wider">PIN Keselamatan</label>
+                            <input type="password" id="loginPin" required value="${isStudent ? '1604' : '1234'}" class="w-full px-4 py-3 rounded-xl bg-input text-main border border-custom text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+
+                        <button type="submit" class="w-full btn-primary py-3.5 rounded-xl font-bold text-sm shadow-lg tracking-wide mt-2">
+                            Log Masuk Manual
+                        </button>
+
+                        <div class="flex items-center my-3">
+                            <div class="flex-grow border-t border-custom"></div>
+                            <span class="px-3 text-[10px] font-bold text-muted tracking-wider">ATAU LOG MASUK PANTAS</span>
+                            <div class="flex-grow border-t border-custom"></div>
+                        </div>
+
+                        <!-- Face ID Quick Login Button -->
+                        <button type="button" onclick="openFaceScanModal('login')" class="w-full py-3 rounded-xl font-bold text-xs bg-card hover:bg-card-light text-main border border-custom shadow-md flex items-center justify-center space-x-2 transition-all">
+                            <span class="text-base">📸</span>
+                            <span>Log Masuk Pengecaman Muka (Face ID)</span>
+                        </button>
+                    </form>
+
+                    <!-- Hint -->
+                    <div class="mt-6 p-3 bg-card-light rounded-xl border border-custom text-[11px] text-muted text-center">
+                        <span class="font-bold">Kredensial Demo:</span><br>
+                        ${isStudent ? 'ID: K041PKPD002 | User: Danial | PIN: 1604' : 'ID: T001KV | User: CikguAhmad | PIN: 1234'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDashboard() {
+            const user = State.userData;
+            const isStudent = State.userRole === 'student';
+
+            return `
+                <div class="w-full max-w-6xl bg-container rounded-3xl p-4 sm:p-6 shadow-2xl border border-custom transition-all">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                        
+                        <!-- LEFT SIDEBAR: PROFILE & NAV -->
+                        <div class="lg:col-span-3 bg-sidebar rounded-2xl p-5 border border-custom flex flex-col justify-between space-y-6">
+                            <div>
+                                <!-- Profile Section -->
+                                <div class="text-center pb-5 border-b border-custom">
+                                    <p class="text-xs font-black uppercase tracking-widest text-muted mb-3">PROFILE</p>
+                                    
+                                    <!-- Profile Image Container with Upload Trigger -->
+                                    <div class="relative group w-24 h-24 mx-auto mb-3">
+                                        <img src="${user.pfp}" alt="Pfp" class="w-24 h-24 rounded-2xl object-cover border-2 border-custom shadow-md">
+                                        <button onclick="openUploadModal()" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex flex-col items-center justify-center text-white text-[10px] font-bold">
+                                            <span>Tukar</span>
+                                            <span>Gambar</span>
+                                        </button>
+                                    </div>
+
+                                    <h3 class="font-bold text-base text-main leading-snug">${user.username}</h3>
+                                    <p class="text-xs text-muted font-medium">${user.fullName}</p>
+                                    <span class="inline-block px-2.5 py-0.5 mt-2 rounded-full text-[10px] font-extrabold bg-card border border-custom text-accent">
+                                        ${isStudent ? user.id_student : user.id_teacher}
+                                    </span>
+                                    <p class="text-[11px] text-muted truncate mt-1">${user.email}</p>
+
+                                    <!-- Face Recognition Status Button -->
+                                    <button onclick="openFaceScanModal('enroll')" class="mt-3 text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-card-light border border-custom hover:border-accent text-muted flex items-center justify-center mx-auto space-x-1">
+                                        <span>📸 Face ID: ${user.faceEnrolled ? 'Aktif' : 'Daftar'}</span>
+                                    </button>
+                                </div>
+
+                                <!-- Theme Switcher Section -->
+                                <div class="py-4 border-b border-custom">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-muted mb-2 text-center">PILIH TEMA WARNA</p>
+                                    <div class="grid grid-cols-4 gap-1.5 px-2">
+                                        <button onclick="setTheme('taupe')" title="Warm Taupe" class="h-6 rounded-lg bg-[#e2d7cb] border border-[#d1c4b5] transition-transform hover:scale-105 ${State.currentTheme === 'taupe' ? 'ring-2 ring-amber-700' : ''}"></button>
+                                        <button onclick="setTheme('dark')" title="Midnight Dark" class="h-6 rounded-lg bg-[#1b2436] border border-[#334155] transition-transform hover:scale-105 ${State.currentTheme === 'dark' ? 'ring-2 ring-sky-400' : ''}"></button>
+                                        <button onclick="setTheme('slate')" title="Nordic Slate" class="h-6 rounded-lg bg-[#cbd5e1] border border-[#94a3b8] transition-transform hover:scale-105 ${State.currentTheme === 'slate' ? 'ring-2 ring-slate-600' : ''}"></button>
+                                        <button onclick="setTheme('emerald')" title="Emerald Sage" class="h-6 rounded-lg bg-[#bbf7d0] border border-[#86efac] transition-transform hover:scale-105 ${State.currentTheme === 'emerald' ? 'ring-2 ring-emerald-600' : ''}"></button>
+                                    </div>
+                                </div>
+
+                                <!-- Navigation Buttons -->
+                                <div class="mt-5 space-y-2.5">
+                                    <button onclick="setNav('home')" class="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-left nav-btn shadow-sm ${State.activeNav === 'home' ? 'active-nav' : ''}">
+                                        Home
+                                    </button>
+                                    <button onclick="setNav('subjectA')" class="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-left nav-btn shadow-sm ${State.activeNav === 'subjectA' ? 'active-nav' : ''}">
+                                        Subject A
+                                    </button>
+                                    <button onclick="setNav('subjectV')" class="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-left nav-btn shadow-sm ${State.activeNav === 'subjectV' ? 'active-nav' : ''}">
+                                        Subject V
+                                    </button>
+                                    <button onclick="setNav('schedule')" class="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-left nav-btn shadow-sm ${State.activeNav === 'schedule' ? 'active-nav' : ''}">
+                                        Schedule
+                                    </button>
+                                    <button onclick="setNav('update')" class="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-left nav-btn shadow-sm ${State.activeNav === 'update' ? 'active-nav' : ''}">
+                                        Update / Pengumuman
+                                    </button>
+                                    <button onclick="setNav('messages')" class="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-left nav-btn shadow-sm flex items-center justify-between ${State.activeNav === 'messages' ? 'active-nav' : ''}">
+                                        <span>Mesej / Chat</span>
+                                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-input text-accent border border-custom font-bold">${State.messages.length}</span>
+                                    </button>
+
+                                    <!-- Extra Teacher Controls -->
+                                    ${!isStudent ? `
+                                        <div class="pt-3 mt-3 border-t border-custom space-y-2">
+                                            <span class="text-[10px] font-black uppercase tracking-widest text-muted block mb-1">Menu Pensyarah</span>
+                                            <button onclick="setNav('manageSubjects')" class="w-full py-2 px-3 rounded-xl text-xs font-semibold text-left nav-btn ${State.activeNav === 'manageSubjects' ? 'active-nav' : ''}">
+                                                + Tambah Subjek Baru
+                                            </button>
+                                            <button onclick="setNav('manageSchedule')" class="w-full py-2 px-3 rounded-xl text-xs font-semibold text-left nav-btn ${State.activeNav === 'manageSchedule' ? 'active-nav' : ''}">
+                                                + Kemaskini Jadual
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+
+                            <!-- Logout -->
+                            <button onclick="handleLogout()" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-red-600 bg-red-100/50 hover:bg-red-200/50 border border-red-200 transition-all text-center">
+                                Log Keluar
+                            </button>
+                        </div>
+
+                        <!-- RIGHT MAIN PANEL -->
+                        <div class="lg:col-span-9 flex flex-col space-y-5">
+                            
+                            <!-- HEADER BANNER TOP RIGHT -->
+                            <div class="bg-card rounded-2xl p-6 border border-custom flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                                <div>
+                                    <h2 class="text-2xl sm:text-3xl font-extrabold text-main">Hi, ${user.username}</h2>
+                                    <h1 class="text-xl sm:text-2xl font-black text-accent mt-1">Welcome to Smanage</h1>
+                                    <div class="w-24 h-1 bg-accent rounded-full my-2"></div>
+                                    <p class="text-xs text-muted font-semibold">System for KvK Computing Student & Teacher</p>
+                                </div>
+
+                                <!-- Logo Container -->
+                                <div class="w-28 h-20 bg-card-light border border-custom rounded-2xl flex items-center justify-center p-3 shadow-inner text-center">
+                                    <span class="text-sm font-black text-accent tracking-wider">LOGO KvK</span>
+                                </div>
+                            </div>
+
+                            <!-- DYNAMIC CONTENT AREA BOTTOM RIGHT -->
+                            <div class="bg-card rounded-2xl p-5 sm:p-6 border border-custom min-h-[400px] flex-grow shadow-sm">
+                                ${renderMainContent()}
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMainContent() {
+            if (State.activeNav === 'home') {
+                return `
+                    <!-- Search Bar -->
+                    <div class="flex items-center space-x-2 mb-6">
+                        <input type="text" id="searchInput" placeholder="Carian pengumuman atau subjek..." value="${State.searchQuery}" onkeyup="State.searchQuery = this.value; render();" class="w-64 px-4 py-2.5 rounded-full bg-input border border-custom text-xs text-main focus:outline-none focus:ring-2 focus:ring-accent shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-card-light border border-custom flex items-center justify-center text-muted shadow-sm">
+                            🔍
+                        </div>
+                    </div>
+
+                    <!-- Teacher Announcement Box -->
+                    <div class="bg-card-light rounded-2xl p-5 border border-custom shadow-sm mb-6">
+                        <h3 class="text-xs font-bold text-muted uppercase tracking-wider mb-3">Teacher Announcement:</h3>
+                        
+                        <div class="space-y-4">
+                            ${State.announcements.map(ann => `
+                                <div class="bg-input rounded-xl p-4 border border-custom shadow-sm">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-accent">${ann.teacherName}</span>
+                                        <span class="text-[10px] text-muted font-medium">${ann.date}</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-main mb-1">${ann.title}</h4>
+                                    <p class="text-xs text-muted leading-relaxed">${ann.content}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Overview Widgets -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-card-light rounded-xl p-4 border border-custom">
+                            <h4 class="text-xs font-bold text-muted uppercase mb-1">Subjek Berdaftar</h4>
+                            <p class="text-2xl font-black text-accent">${Object.keys(State.subjects).length}</p>
+                        </div>
+                        <div class="bg-card-light rounded-xl p-4 border border-custom">
+                            <h4 class="text-xs font-bold text-muted uppercase mb-1">Jadual Minggu Ini</h4>
+                            <p class="text-2xl font-black text-accent">${State.schedule.length} Sesi</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (State.activeNav === 'subjectA' || State.activeNav === 'subjectV' || State.subjects[State.activeNav]) {
+                const subj = State.subjects[State.activeNav];
+                return `
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-custom pb-3">
+                            <h3 class="text-lg font-bold text-main">${subj ? subj.name : 'Subjek'}</h3>
+                            <span class="px-3 py-1 bg-card-light border border-custom rounded-full text-xs font-bold text-accent">${subj ? subj.code : ''}</span>
+                        </div>
+                        <div class="bg-card-light rounded-xl p-5 border border-custom text-xs text-muted leading-relaxed">
+                            <p class="text-main font-medium leading-relaxed">${subj ? subj.content : 'Tiada kandungan lagi.'}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (State.activeNav === 'schedule') {
+                return `
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-main border-b border-custom pb-2">Jadual Waktu Kelas</h3>
+                        <div class="space-y-3">
+                            ${State.schedule.map(s => `
+                                <div class="bg-card-light p-4 rounded-xl border border-custom flex justify-between items-center">
+                                    <div>
+                                        <span class="text-[10px] font-bold text-accent uppercase">${s.day}</span>
+                                        <h4 class="text-sm font-bold text-main">${s.title}</h4>
+                                        <p class="text-xs text-muted">${s.room}</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-input border border-custom rounded-lg text-xs font-bold text-muted">${s.time}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (State.activeNav === 'update') {
+                const isTeacher = State.userRole === 'teacher';
+                return `
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-main border-b border-custom pb-2">Pengumuman & Update Terkini</h3>
+                        
+                        ${isTeacher ? `
+                            <form onsubmit="handleAddAnnouncement(event)" class="bg-card-light p-4 rounded-xl border border-custom space-y-3 mb-6">
+                                <h4 class="text-xs font-bold text-accent uppercase">Tambah Pengumuman Baru</h4>
+                                <input type="text" id="annTitle" placeholder="Tajuk Pengumuman" required class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none">
+                                <textarea id="annContent" placeholder="Isi kandungan pengumuman..." required rows="3" class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none"></textarea>
+                                <button type="submit" class="btn-primary px-4 py-2 rounded-xl text-xs font-bold">Terbitkan Pengumuman</button>
+                            </form>
+                        ` : ''}
+
+                        <div class="space-y-3">
+                            ${State.announcements.map(ann => `
+                                <div class="bg-card-light p-4 rounded-xl border border-custom">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-bold text-accent">${ann.teacherName}</span>
+                                        <span class="text-[10px] text-muted">${ann.date}</span>
+                                    </div>
+                                    <h4 class="text-sm font-bold text-main mb-1">${ann.title}</h4>
+                                    <p class="text-xs text-muted leading-relaxed">${ann.content}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (State.activeNav === 'messages') {
+                const isStudent = State.userRole === 'student';
+                const currentUserId = isStudent ? State.userData.id_student : State.userData.id_teacher;
+
+                return `
+                    <div class="flex flex-col h-[480px]">
+                        <div class="flex items-center justify-between border-b border-custom pb-3 mb-3">
+                            <div>
+                                <h3 class="text-base font-bold text-main">Mesej Direct (Chat)</h3>
+                                <p class="text-[11px] text-muted">Ruang perbincangan antara Pelajar & Pensyarah</p>
+                            </div>
+                            <span class="px-3 py-1 bg-card-light border border-custom rounded-full text-xs font-bold text-accent">
+                                ${isStudent ? 'Sembang dengan Cikgu Ahmad' : 'Sembang dengan Danial'}
+                            </span>
+                        </div>
+
+                        <!-- Chat Messages Container -->
+                        <div id="chatMessageList" class="flex-grow overflow-y-auto space-y-3 p-3 bg-card-light border border-custom rounded-2xl mb-3">
+                            ${State.messages.map(msg => {
+                                const isMe = msg.senderId === currentUserId;
+                                return `
+                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                                        <div class="flex items-center space-x-1.5 mb-1 text-[10px] text-muted font-semibold">
+                                            <span>${msg.senderName} (${msg.senderRole === 'student' ? 'Pelajar' : 'Pensyarah'})</span>
+                                            <span>•</span>
+                                            <span>${msg.timestamp}</span>
+                                        </div>
+                                        <div class="max-w-[80%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs font-medium shadow-sm ${
+                                            isMe 
+                                            ? 'btn-primary rounded-br-none' 
+                                            : 'bg-input text-main border border-custom rounded-bl-none'
+                                        }">
+                                            ${msg.text}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <!-- Message Input Form -->
+                        <form onsubmit="handleSendMessage(event)" class="flex items-center space-x-2">
+                            <input type="text" id="chatInputText" required placeholder="${isStudent ? 'Tulis mesej kepada Cikgu Ahmad...' : 'Tulis mesej kepada Danial...'}" class="flex-grow px-4 py-3 rounded-xl bg-input text-xs border border-custom text-main focus:outline-none focus:ring-2 focus:ring-accent">
+                            <button type="submit" class="btn-primary px-5 py-3 rounded-xl font-bold text-xs shadow-md flex items-center space-x-1">
+                                <span>Hantar</span>
+                                <span>🚀</span>
+                            </button>
+                        </form>
+                    </div>
+                `;
+            }
+
+            if (State.activeNav === 'manageSubjects') {
+                return `
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-main border-b border-custom pb-2">Tambah Subjek Baru</h3>
+                        <form onsubmit="handleCreateSubject(event)" class="bg-card-light p-4 rounded-xl border border-custom space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-muted mb-1">KOD SUBJEK</label>
+                                <input type="text" id="newSubjCode" placeholder="Cth: COMP303" required class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-muted mb-1">NAMA SUBJEK</label>
+                                <input type="text" id="newSubjName" placeholder="Cth: Subject C: Cyber Security Essentials" required class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-muted mb-1">KANDUNGAN SUBJEK</label>
+                                <textarea id="newSubjContent" placeholder="Ringkasan kursus dan silibus..." rows="3" class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary px-5 py-2.5 rounded-xl text-xs font-bold shadow-md">Simpan Subjek</button>
+                        </form>
+                    </div>
+                `;
+            }
+
+            if (State.activeNav === 'manageSchedule') {
+                return `
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-main border-b border-custom pb-2">Tambah / Kemaskini Jadual</h3>
+                        <form onsubmit="handleAddSchedule(event)" class="bg-card-light p-4 rounded-xl border border-custom space-y-3">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-muted mb-1">HARI</label>
+                                    <select id="schDay" class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none">
+                                        <option value="Isnin">Isnin</option>
+                                        <option value="Selasa">Selasa</option>
+                                        <option value="Rabu">Rabu</option>
+                                        <option value="Khamis">Khamis</option>
+                                        <option value="Jumaat">Jumaat</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-muted mb-1">MASA</label>
+                                    <input type="text" id="schTime" placeholder="Cth: 08:00 AM - 10:00 AM" required class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-muted mb-1">TAJUK SESI / SUBJEK</label>
+                                <input type="text" id="schTitle" placeholder="Cth: Subject A (Makmal Amali)" required class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-muted mb-1">LOKASI / BILIK</label>
+                                <input type="text" id="schRoom" placeholder="Cth: Makmal Komputer 2" required class="w-full p-2.5 bg-input border border-custom rounded-xl text-xs text-main focus:outline-none">
+                            </div>
+                            <button type="submit" class="btn-primary px-5 py-2.5 rounded-xl text-xs font-bold shadow-md">Tambah Sesi Jadual</button>
+                        </form>
+                    </div>
+                `;
+            }
+
+            return `<div class="text-xs text-muted">Kandungan tidak ditemui.</div>`;
+        }
+
+        // Action Handlers
+        function handleSendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInputText');
+            const text = input ? input.value.trim() : '';
+            if (!text) return;
+
+            const isStudent = State.userRole === 'student';
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const newMsg = {
+                id: 'msg-' + Date.now(),
+                senderId: isStudent ? State.userData.id_student : State.userData.id_teacher,
+                senderName: State.userData.username,
+                senderRole: State.userRole,
+                text: text,
+                timestamp: timeStr
+            };
+
+            State.messages.push(newMsg);
+            saveMessagesToStorage();
+            input.value = '';
+            render();
+
+            setTimeout(() => {
+                const chatContainer = document.getElementById('chatMessageList');
+                if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 50);
+        }
+
+        function handleAddAnnouncement(e) {
+            e.preventDefault();
+            const title = document.getElementById('annTitle').value.trim();
+            const content = document.getElementById('annContent').value.trim();
+            if (title && content) {
+                State.announcements.unshift({
+                    id: 'ann-' + Date.now(),
+                    teacherName: State.userData.fullName,
+                    title: title,
+                    content: content,
+                    date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                });
+                try {
+                    localStorage.setItem(LOCAL_STORAGE_KEY_ANNS, JSON.stringify(State.announcements));
+                } catch(err) { console.error(err); }
+                render();
+                showModal('Berjaya', 'Pengumuman telah berjaya diterbitkan!');
+            }
+        }
+
+        function handleCreateSubject(e) {
+            e.preventDefault();
+            const code = document.getElementById('newSubjCode').value.trim();
+            const name = document.getElementById('newSubjName').value.trim();
+            const content = document.getElementById('newSubjContent').value.trim();
+            const key = 'subj_' + Date.now();
+            if (code && name) {
+                State.subjects[key] = { name, code, content };
+                try {
+                    localStorage.setItem(LOCAL_STORAGE_KEY_SUBJS, JSON.stringify(State.subjects));
+                } catch(err) { console.error(err); }
+                State.activeNav = 'home';
+                render();
+                showModal('Berjaya', 'Subjek baru telah disimpan ke dalam portal!');
+            }
+        }
+
+        function handleAddSchedule(e) {
+            e.preventDefault();
+            const day = document.getElementById('schDay').value;
+            const time = document.getElementById('schTime').value.trim();
+            const title = document.getElementById('schTitle').value.trim();
+            const room = document.getElementById('schRoom').value.trim();
+            if (time && title) {
+                State.schedule.push({ id: 'sch-' + Date.now(), day, time, title, room });
+                try {
+                    localStorage.setItem(LOCAL_STORAGE_KEY_SCHED, JSON.stringify(State.schedule));
+                } catch(err) { console.error(err); }
+                State.activeNav = 'schedule';
+                render();
+                showModal('Berjaya', 'Sesi jadual baru telah dikemaskini!');
+            }
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            if (State.currentView === 'login') {
+                app.innerHTML = renderLoginScreen();
+            } else {
+                app.innerHTML = renderDashboard();
+            }
+        }
+
+        // Initialize application on window load
+        window.onload = function() {
+            document.documentElement.setAttribute('data-theme', State.currentTheme);
+            document.body.setAttribute('data-theme', State.currentTheme);
+            render();
+        };
+    </script>
+</body>
+</html>
